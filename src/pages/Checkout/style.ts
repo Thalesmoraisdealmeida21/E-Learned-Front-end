@@ -107,6 +107,17 @@ export const ContentProfile = styled.div`
 export const Section = styled.section`
   display: flex;
   flex-direction: column;
+
+  select {
+    width: 30%;
+    padding: 10px;
+    height: 50px;
+    border: transparent;
+    border-radius: 8px;
+    background: #eaeaea;
+    margin: 10px;
+    border: 1px solid silver;
+  }
 `;
 
 export const TitleSection = styled.h2`

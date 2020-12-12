@@ -110,6 +110,7 @@ const Checkout: React.FC = () => {
   const [orderFound, setOrderFound] = useState<Order>({} as Order);
   const { order } = useParams<{ order: string }>();
   const [ufs, setUfs] = useState<UF[]>([]);
+  const [installments, setInstallments] = useState('1');
 
   const [cardExpirationDateMonth, setCardExpirationDateMonth] = useState<
     string
@@ -142,32 +143,27 @@ const Checkout: React.FC = () => {
     return cpfCnpjFormatted === '' ? value : cpfCnpjFormatted;
   }, []);
 
-  const telephoneMask = useCallback(
-    (v: string) => {
-      let valFormatted = v.replace(/\D/g, ''); // Remove tudo o que não é dígito
-      valFormatted = valFormatted.replace(/^0/, '');
+  const telephoneMask = useCallback((v: string) => {
+    let valFormatted = v.replace(/\D/g, ''); // Remove tudo o que não é dígito
+    valFormatted = valFormatted.replace(/^0/, '');
 
-      if (valFormatted.length > 10) {
-        valFormatted = valFormatted.replace(
-          /^(\d\d)(\d{5})(\d{4}).*/,
-          '($1) $2-$3',
-        );
-      } else if (valFormatted.length > 5) {
-        valFormatted = valFormatted.replace(
-          /^(\d\d)(\d{4})(\d{0,4}).*/,
-          '($1) $2-$3',
-        );
-      } else if (valFormatted.length > 2) {
-        valFormatted = valFormatted.replace(/^(\d\d)(\d{0,5})/, '($1) $2');
-      } else {
-        valFormatted = valFormatted.replace(/^(\d*)/, '($1');
-      }
-
-      console.log(userData.telephone);
-      return valFormatted;
-    },
-    [userData],
-  );
+    if (valFormatted.length > 10) {
+      valFormatted = valFormatted.replace(
+        /^(\d\d)(\d{5})(\d{4}).*/,
+        '($1) $2-$3',
+      );
+    } else if (valFormatted.length > 5) {
+      valFormatted = valFormatted.replace(
+        /^(\d\d)(\d{4})(\d{0,4}).*/,
+        '($1) $2-$3',
+      );
+    } else if (valFormatted.length > 2) {
+      valFormatted = valFormatted.replace(/^(\d\d)(\d{0,5})/, '($1) $2');
+    } else {
+      valFormatted = valFormatted.replace(/^(\d*)/, '($1');
+    }
+    return valFormatted;
+  }, []);
 
   useEffect(() => {
     async function getUserData(): Promise<void> {
@@ -228,9 +224,6 @@ const Checkout: React.FC = () => {
 
         userData.telephone = tel;
 
-        console.log(city);
-
-        console.log(userData);
         const coursesIds = courses.map(courseItem => {
           return courseItem.id;
         });
@@ -308,6 +301,7 @@ const Checkout: React.FC = () => {
             cardExpirationDateMonth + cardExpirationDateYear,
           card_cvv,
         });
+
         const response = await api.post<TransactionStatus>(
           `/orders/pay/${order}`,
           {
@@ -316,6 +310,7 @@ const Checkout: React.FC = () => {
             payment_method: paymentMethod,
             user: userData,
             items,
+            installments: paymentMethod === 'boleto' ? '1' : installments,
           },
         );
         if (response.data.boleto_url) {
@@ -375,6 +370,7 @@ const Checkout: React.FC = () => {
       clearCart,
       user.id,
       courses,
+      installments,
     ],
   );
 
@@ -578,6 +574,32 @@ const Checkout: React.FC = () => {
               </PaymentsMethod>
               {paymentMethod === 'creditCard' && (
                 <>
+                  <span>Pagar em</span>
+                  <div>
+                    <select
+                      placeholder="Mes de Vencimento"
+                      name="installments"
+                      onChange={evt => {
+                        setInstallments(evt.target.value);
+                      }}
+                      id="installments"
+                    >
+                      <option selected value="1">
+                        1x
+                        {Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(orderFound.total)}
+                      </option>
+                      <option value="2">
+                        2x{' '}
+                        {Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(orderFound.total / 2)}
+                      </option>
+                    </select>
+                  </div>
                   <Input
                     label="Nome (Igual do Cartão)"
                     id="card_holder_name"
