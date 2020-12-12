@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
 import { FiEdit, FiTrash } from 'react-icons/fi';
-import { MdAddShoppingCart } from 'react-icons/md';
+import { FaChalkboard } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
@@ -14,13 +14,13 @@ import {
   Speeches,
   ContainerDashboard,
   AddToCartButton,
-  Tooltip,
 } from './style';
 
 interface Course {
   id: string;
   name: string;
   price: number;
+  resume: string;
 }
 
 const AddSpeeche: React.FC = () => {
@@ -101,37 +101,34 @@ const AddSpeeche: React.FC = () => {
           {courses?.map(course => {
             return (
               <ItemList key={course.id}>
-                <div>
-                  <h2>{course.name}</h2>
+                <FaChalkboard size={60} />
+                <h2>{course.name}</h2>
+                <p>{course.resume}</p>
+                <h3>
+                  {Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  }).format(course.price)}
+                </h3>
 
-                  <h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleAddToMySpeeches(course);
+                  }}
+                >
+                  Adicionar o Carrinho
+                </button>
+
+                {/* <h3>
                     {Intl.NumberFormat('pt-BR', {
                       style: 'currency',
                       currency: 'BRL',
                     }).format(course.price)}
-                  </h3>
-                </div>
+                  </h3> */}
 
                 <AddToCartButton>
                   <div>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      type="button"
-                      disableRipple
-                      style={{
-                        borderRadius: '50%',
-                        height: '70px',
-                        width: '70px',
-                      }}
-                      onClick={() => {
-                        handleAddToMySpeeches(course);
-                      }}
-                    >
-                      <MdAddShoppingCart size={40} />
-                      <Tooltip>Adicionar ao carrinho</Tooltip>
-                    </Button>
-
                     <Button
                       disableRipple
                       variant="outlined"
@@ -145,7 +142,6 @@ const AddSpeeche: React.FC = () => {
                         Editar
                       </Link>
                     </Button>
-
                     <button
                       type="button"
                       onClick={() => {
@@ -158,7 +154,6 @@ const AddSpeeche: React.FC = () => {
                       <FiTrash size={20} />
                       Desativar
                     </button>
-
                     <Button
                       disableRipple
                       variant="outlined"
@@ -171,7 +166,7 @@ const AddSpeeche: React.FC = () => {
                       }}
                     >
                       <FiEdit size={20} />+ usuario
-                    </Button>
+                    </Button>{' '}
                   </div>
                 </AddToCartButton>
               </ItemList>
