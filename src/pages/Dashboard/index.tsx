@@ -117,10 +117,7 @@ const Dashboard: React.FC = () => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <ReactPlayer
-              width="100%"
-              url="https://www.youtube.com/watch?v=Rsj_z43oNRk"
-            />
+            <ReactPlayer width="100%" url="https://youtu.be/_MDogXtucms" />
             No momento que você confirmar, clicando no botão abaixo. Você tera
             um prazo de 24 hroas para assistir a paletra. Passado este periodo
             não poderá mais acessar o conteúdo
